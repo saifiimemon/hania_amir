@@ -4,9 +4,14 @@ import { ParticleCanvas } from './ParticleCanvas';
 export const HeroSection: React.FC = () => {
   const [isRevealed, setIsRevealed] = useState(false);
   const [revealComplete, setRevealComplete] = useState(false);
+  const [resetCounter, setResetCounter] = useState(0);
 
   const handleRevealClick = () => {
-    setIsRevealed(true);
+    if (!isRevealed) {
+      setIsRevealed(true);
+    } else {
+      setResetCounter(prev => prev + 1);
+    }
     setRevealComplete(false);
   };
 
@@ -21,6 +26,8 @@ export const HeroSection: React.FC = () => {
         <div className="grid-bg"></div>
         <ParticleCanvas 
           isRevealed={isRevealed}
+          resetCounter={resetCounter}
+          onRevealStart={() => setRevealComplete(false)}
           onRevealComplete={handleRevealComplete}
           imageSrc="/iphone-promo.jpg"
         />

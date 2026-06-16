@@ -3,7 +3,9 @@ import React, { useEffect, useRef, useState } from 'react';
 interface ParticleCanvasProps {
   isRevealed: boolean;
   onRevealComplete?: () => void;
+  onRevealStart?: () => void;
   imageSrc: string;
+  resetCounter: number;
 }
 
 interface Particle {
@@ -21,7 +23,9 @@ interface Particle {
 export const ParticleCanvas: React.FC<ParticleCanvasProps> = ({
   isRevealed,
   onRevealComplete,
+  onRevealStart,
   imageSrc,
+  resetCounter,
 }) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -274,9 +278,9 @@ export const ParticleCanvas: React.FC<ParticleCanvasProps> = ({
 
   // Reset function to show the fluid animation again
   const triggerReset = () => {
-    if (!showHighRes) return;
     setShowHighRes(false);
     revealProgressRef.current = 0;
+    if (onRevealStart) onRevealStart();
     
     // Disperse particles randomly outwards
     particlesRef.current.forEach(p => {
@@ -291,6 +295,13 @@ export const ParticleCanvas: React.FC<ParticleCanvasProps> = ({
       revealProgressRef.current = 0.01;
     }, 150);
   };
+
+  // Listen to resets from the parent component
+  useEffect(() => {
+    if (resetCounter > 0) {
+      triggerReset();
+    }
+  }, [resetCounter]);
 
   return (
     <div 
