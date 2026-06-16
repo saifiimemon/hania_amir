@@ -139,7 +139,7 @@ export const ParticleCanvas: React.FC<ParticleCanvasProps> = ({
       
       // Update progress if revealed
       if (isRevealed && progress < 1.0) {
-        revealProgressRef.current = Math.min(1.0, progress + 0.007); // ~4-5 seconds assembly
+        revealProgressRef.current = Math.min(1.0, progress + 0.018); // Faster ~1.0 second assembly
         if (revealProgressRef.current >= 1.0) {
           setShowHighRes(true);
           if (onRevealComplete) onRevealComplete();
@@ -185,22 +185,22 @@ export const ParticleCanvas: React.FC<ParticleCanvasProps> = ({
         
         // Combine forces based on progress
         if (progress > 0) {
-          const steerStrength = Math.pow(progress, 2.5) * 0.18; // Quadratic increase
-          const fluidWeight = Math.max(0, 1 - progress * 1.3); // Fade out fluid turbulence
+          const steerStrength = Math.pow(progress, 1.5) * 0.32; // Stronger attraction curve starting earlier
+          const fluidWeight = Math.max(0, 1 - progress * 1.5); // Fade out fluid turbulence faster
           
           p.vx += dx * steerStrength + flowForceX * fluidWeight;
           p.vy += dy * steerStrength + flowForceY * fluidWeight;
           
-          // Apply extra damping in the final phase to lock particles in place perfectly
-          if (progress > 0.85) {
-            p.vx *= 0.75;
-            p.vy *= 0.75;
-            // Linear interpolation snap to avoid jittering
-            p.x += (tx - p.x) * 0.15;
-            p.y += (ty - p.y) * 0.15;
+          // Apply extra damping in the final phase to lock particles in place perfectly and quickly
+          if (progress > 0.75) {
+            p.vx *= 0.62;
+            p.vy *= 0.62;
+            // Linear interpolation snap to avoid jittering (faster snapping speed)
+            p.x += (tx - p.x) * 0.28;
+            p.y += (ty - p.y) * 0.28;
           } else {
-            p.vx *= 0.92;
-            p.vy *= 0.92;
+            p.vx *= 0.88;
+            p.vy *= 0.88;
           }
         } else {
           // Ambient fluid motion (no target attraction)
